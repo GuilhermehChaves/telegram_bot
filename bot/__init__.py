@@ -4,8 +4,7 @@ from bot.updates import Updates
 
 class TelegramBot:
     def __init__(self, token):
-        self.token = token
-        self.base_url = f'https://api.telegram.org/bot{self.token}'
+        self.base_url = f'https://api.telegram.org/bot{token}'
         self.commands = {}
 
     def send_message(self, msg: Message, chat_id: str) -> None:
@@ -22,7 +21,7 @@ class TelegramBot:
         return self.commands.keys()
 
     def verify_command(self, msg):
-        if msg['message']['text']:
+        if msg['message']['text'] is not None:
             text = msg['message']['text']
 
             if text in self.get_commands():
