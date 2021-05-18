@@ -1,6 +1,6 @@
 from bot.message import TextMessage
 from constants import TELEGRAM_BOT
-from commands import start
+from commands import start, dollar
 
 from flask import Flask, Response, request
 
@@ -12,6 +12,7 @@ app = Flask(__name__)
 
 
 TELEGRAM_BOT.add_command('/start', start)
+TELEGRAM_BOT.add_command('/dollar', dollar)
 
 
 @app.route('/', methods=['POST'])
