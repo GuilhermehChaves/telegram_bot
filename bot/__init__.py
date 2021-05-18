@@ -1,6 +1,3 @@
-import sys
-import time
-
 from bot.message import Message, TextMessage
 from bot.updates import Updates
 
@@ -21,33 +18,19 @@ class TelegramBot:
     def get_user_mention(user_id, user_name) -> str:
         return f'<a href="tg://user?id={user_id}">@{user_name}</a>'
 
-    def run(self) -> None:
-        keys = self.commands.keys()
+    def get_commands(self):
+        return self.commands.keys()
 
-        try:
-            while True:
-                update_messages = Updates.get_update_messages(self.base_url)
-                latest_update_id = ""
+    def verify_command(self, msg):
+        if msg['message']['text']:
+            text = msg['message']['text']
 
-                for i, item in enumerate(update_messages['result']):
-                    if i != 0:
-                        user_message = item['message']['text']
+            if text in self.get_commands():
+                action = self.commands[text]
+                action(msg)
 
-                        if user_message in keys:
-                            action = self.commands[user_message]
-                            action(item)
-                        else:
-                            chat_id = item['message']['chat']['id']
-                            user_id = item['message']['from']['id']
-                            user_name = item['message']['from']['first_name']
+                return True
 
-                            bot_message = f'<a href="tg://user?id={user_id}">@{user_name}</a> {user_message}'
-                            self.send_message(TextMessage(bot_message), chat_id)
+            return False
 
-                        latest_update_id = item['update_id']
-
-                Updates.clear_replied_messages(self.base_url, latest_update_id)
-                time.sleep(0.5)
-
-        except KeyboardInterrupt:
-            print("Interrupting")
+        return False

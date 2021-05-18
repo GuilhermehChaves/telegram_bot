@@ -1,22 +1,30 @@
-from bot import TelegramBot
 from bot.message import TextMessage
+from constants import TELEGRAM_BOT
+from commands import start
 
-telegram_bot = TelegramBot('BOT_TOKEN')
+from flask import Flask, Response, request
+
+app = Flask(__name__)
+
+# set webhook
+# https://api.telegram.org/bot{BOT_TOKEN}/setWebhook?url=
+# https://api.telegram.org/bot{BOT_TOKEN}/deleteWebhook
 
 
-def start(update):
-    chat_id = update['message']['chat']['id']
-    user_id = update['message']['from']['id']
-    first_name = update['message']['from']['first_name']
+TELEGRAM_BOT.add_command('/start', start)
 
-    user_mention = TelegramBot.get_user_mention(user_id, first_name)
 
-    telegram_bot.send_message(
-        TextMessage(f'{user_mention} Você está começando!!!'),
-        chat_id
-    )
+@app.route('/', methods=['POST'])
+def handle_messages():
+    message = request.get_json()
+    is_command = TELEGRAM_BOT.verify_command(message)
+
+    if not is_command:
+        chat_id = message['message']['chat']['id']
+        TELEGRAM_BOT.send_message(TextMessage('Olá eu sou um bot!!!'), chat_id)
+
+    return Response('success', status=200)
 
 
 if __name__ == '__main__':
-    telegram_bot.add_command("/start", start)
-    telegram_bot.run()
+    app.run(debug=True)
