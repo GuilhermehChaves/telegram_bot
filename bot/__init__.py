@@ -1,5 +1,4 @@
 from bot.message import Message, TextMessage
-from bot.updates import Updates
 
 
 class TelegramBot:
