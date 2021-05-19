@@ -1,3 +1,5 @@
+import requests
+
 from bot.message import Message, TextMessage
 
 
@@ -11,6 +13,16 @@ class TelegramBot:
 
     def add_command(self, name, action) -> None:
         self.commands[name] = action
+
+    def set_webhook(self, url):
+        path = '/setWebhook'
+        webhook_uri = f'{self.base_url}{path}?url={url}'
+        requests.get(webhook_uri)
+
+    def delete_webhook(self):
+        path = '/deleteWebhook'
+        webhook_uri = f'{self.base_url}{path}'
+        requests.get(webhook_uri)
 
     @staticmethod
     def get_user_mention(user_id, user_name) -> str:

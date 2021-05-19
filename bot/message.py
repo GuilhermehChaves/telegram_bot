@@ -69,3 +69,31 @@ class AudioMessage(Message):
             data=multipart_data,
             headers={'Content-Type': multipart_data.content_type}
         )
+
+
+class DocumentMessage(Message):
+    def __init__(self, document_path, text):
+        self.document_path = document_path
+        self.text = text
+        self.path = '/sendDocument'
+
+    def send(self, chat_id: str, base_url: str) -> None:
+        target_uri = f'{base_url}{self.path}'
+        multipart_data = prepare_file(self.document_path, self.text, chat_id, 'document')
+
+        requests.post(
+            target_uri,
+            data=multipart_data,
+            headers={'Content-Type': multipart_data.content_type}
+        )
+
+
+class LocationMessage(Message):
+    def __init__(self, latitude, longitude):
+        self.latitude = latitude
+        self.longitude = longitude
+        self.path = '/sendLocation'
+
+    def send(self, chat_id: str, base_url: str) -> None:
+        target_uri = f'{base_url}{self.path}?chat_id={chat_id}&latitude={self.latitude}&longitude={self.longitude}'
+        requests.get(target_uri)
